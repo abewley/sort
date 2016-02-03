@@ -66,7 +66,7 @@ To display the results you need to:
 
 ### Main Results
 
-      Using the [MOT challenge deckit](https://motchallenge.net/devkit/) the method produces the following results (as described in the paper).
+Using the [MOT challenge deckit](https://motchallenge.net/devkit/) the method produces the following results (as described in the paper).
 
  Sequence       | Rcll  Prcn   FAR| GT  MT  PT  ML|   FP    FN  IDs   FM|  MOTA  MOTP MOTAL
 --------------- |:---------------:|:-------------:|:-------------------:|:------------------:
