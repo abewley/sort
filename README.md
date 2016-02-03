@@ -9,7 +9,7 @@ By Alex Bewley at DynamicDetection.com
 
 SORT is a barebones implementation of a visual multiple object tracking framework based on rudimentary data association and state estimation techniques. It is designed for online tracking applications where only past and current frames are available and the method produces object identities on the fly. While this minimalistic tracker doesn't handle occlusion or re-entering objects its purpose is to serve as a baseline and testbed for the development of future trackers.
 
-SORT was initially described in an [arXiv tech report](http://arxiv.org/abs/XXXX.YYYYY). At the time of the initial publication, SORT was ranked the best *open source* multiple object tracker on the [MOT benchmark](https://motchallenge.net/results/2D_MOT_2015/).
+SORT was initially described in an [arXiv tech report](http://arxiv.org/abs/1602.00763). At the time of the initial publication, SORT was ranked the best *open source* multiple object tracker on the [MOT benchmark](https://motchallenge.net/results/2D_MOT_2015/).
 
 This code has been tested on Mac OSX 10.10, and Ubuntu 12.04, with Python 2.7.
 
@@ -25,9 +25,9 @@ SORT is released under the GPL License (refer to the LICENSE file for details) t
 If you find this repo useful in your research, please consider citing:
 
     @article{bewley2015sort,
-        Author = {Alex Bewley, Zonguan Ge, Lionel Ott, Fabio Ramos, Ben Upcroft},
+        Author = {Alex Bewley and Zonguan Ge and Lionel Ott and Fabio Ramos and Ben Upcroft},
         Title = {Simple Online and Realtime Tracking},
-        Journal = {arXiv preprint arXiv:XXXX.YYYYY},
+        Journal = {arXiv preprint arXiv:1602.00763},
         Year = {2016}
     }
 
