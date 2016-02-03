@@ -53,6 +53,7 @@ $ python sort.py
 ```
 
 To display the results you need to:
+
 0. Download the [2D MOT 2015 benchmark dataset](https://motchallenge.net/data/2D_MOT_2015/#download)
 0. Create a symbolic link to the dataset
   ```
