@@ -3,7 +3,8 @@ SORT
 
 A simple online and realtime tracking algorithm for 2D multiple object tracking in video sequences.
 
-By Alex Bewley at DynamicDetection.com
+By Alex Bewley
+DynamicDetection.com
 
 ### Introduction
 
