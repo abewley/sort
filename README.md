@@ -28,10 +28,10 @@ If you find this repo useful in your research, please consider citing:
     @article{bewley2015sort,
         Author = {Alex Bewley and Zonguan Ge and Lionel Ott and Fabio Ramos and Ben Upcroft},
         Title = {Simple Online and Realtime Tracking},
-        Journal = {arXiv preprint arXiv:1602.00763},
+        url = {http://arxiv.org/abs/1602.00763},
+        Journal = {arXiv:1602.00763},
         Year = {2016}
     }
-
 
 
 ### Dependencies:
