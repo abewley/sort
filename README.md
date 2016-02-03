@@ -11,7 +11,7 @@ SORT is a barebones implementation of a visual multiple object tracking framewor
 
 SORT was initially described in an [arXiv tech report](http://arxiv.org/abs/1602.00763). At the time of the initial publication, SORT was ranked the best *open source* multiple object tracker on the [MOT benchmark](https://motchallenge.net/results/2D_MOT_2015/).
 
-This code has been tested on Mac OSX 10.10, and Ubuntu 12.04, with Python 2.7.
+This code has been tested on Mac OSX 10.10, and Ubuntu 14.04, with Python 2.7 (anaconda).
 
 **Note:** A significant proportion of SORT's accuracy is attributed to the detections.
 For your convenience, this repo also contains *Faster* RCNN detections for the MOT benchmark sequences. To run the detector yourself please see the original [*Faster* RCNN project](https://github.com/ShaoqingRen/faster_rcnn) or the python reimplementation of [py-faster-rcnn](https://github.com/rbgirshick/py-faster-rcnn) by Ross Girshick.
