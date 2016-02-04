@@ -3,8 +3,8 @@ SORT
 
 A simple online and realtime tracking algorithm for 2D multiple object tracking in video sequences.
 
-By Alex Bewley
-DynamicDetection.com
+By Alex Bewley  
+[DynamicDetection.com](http://www.dynamicdetection.com)
 
 ### Introduction
 
@@ -79,3 +79,24 @@ Using the [MOT challenge devkit](https://motchallenge.net/devkit/) the method pr
  Venice-2       | 42.5  64.8  2.75| 26   7   9  10| 1650  4109   57  106|  18.6  73.4  19.3
  KITTI-17       | 67.1  92.3  0.26|  9   1   8   0|   38   225    9   16|  60.2  72.3  61.3
  *Overall*      | 49.5  77.5  1.24|234  48 111  75| 3311 11660  274  499|  34.0  73.3  35.1
+
+
+### Using SORT in your own project
+
+Below is the gist of how to instantiate and update SORT. See the '__main__' section of sort.py for a complete example.
+    
+    from sort import *
+    
+    #create instance of SORT
+    mot_tracker = Sort() 
+    
+    # get detections
+    ...
+    
+    # update SORT
+    track_bbs_ids = mot_tracker.update(detections)
+
+    # track_bbs_ids is a np array where each row contains a valid bounding box and track_id (last column)
+    ...
+    
+ 
