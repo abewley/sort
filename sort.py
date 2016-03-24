@@ -17,6 +17,7 @@
 """
 from __future__ import print_function
 
+from numba import jit
 import os.path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,7 +29,7 @@ import time
 import argparse
 from filterpy.kalman import KalmanFilter
 
-
+@jit
 def iou(bb_test,bb_gt):
   """
   Computes IUO between two bboxes in the form [x1,y1,x2,y2]
@@ -150,9 +151,9 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
     if(d not in matched_indices[:,0]):
       unmatched_detections.append(d)
   unmatched_trackers = []
-  for d,det in enumerate(trackers):
-    if(d not in matched_indices[:,1]):
-      unmatched_trackers.append(d)
+  for t,trk in enumerate(trackers):
+    if(t not in matched_indices[:,1]):
+      unmatched_trackers.append(t)
 
   #filter out matched with low IOU
   matches = []
