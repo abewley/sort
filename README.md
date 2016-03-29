@@ -15,7 +15,7 @@ SORT was initially described in an [arXiv tech report](http://arxiv.org/abs/1602
 This code has been tested on Mac OSX 10.10, and Ubuntu 14.04, with Python 2.7 (anaconda).
 
 **Note:** A significant proportion of SORT's accuracy is attributed to the detections.
-For your convenience, this repo also contains *Faster* RCNN detections for the MOT benchmark sequences. To run the detector yourself please see the original [*Faster* RCNN project](https://github.com/ShaoqingRen/faster_rcnn) or the python reimplementation of [py-faster-rcnn](https://github.com/rbgirshick/py-faster-rcnn) by Ross Girshick.
+For your convenience, this repo also contains *Faster* RCNN detections for the MOT benchmark sequences in the benchmark format. To run the detector yourself please see the original [*Faster* RCNN project](https://github.com/ShaoqingRen/faster_rcnn) or the python reimplementation of [py-faster-rcnn](https://github.com/rbgirshick/py-faster-rcnn) by Ross Girshick.
 
 ### License
 
