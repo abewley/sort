@@ -26,14 +26,14 @@ SORT is released under the GPL License (refer to the LICENSE file for details) t
 
 If you find this repo useful in your research, please consider citing:
 
- @inproceedings{Bewley2016_sort,
-    booktitle={2016 IEEE International Conference on Image Processing (ICIP)},
-    title={Simple online and realtime tracking},
-    year={2016},
-    pages={3464-3468},
-    keywords={Benchmark testing;Complexity theory;Detectors;Kalman filters;Target tracking;Visualization;Computer Vision;Data Association;Detection;Multiple Object Tracking},
-    doi={10.1109/ICIP.2016.7533003},
-    month={Sept},}
+    @inproceedings{Bewley2016_sort,
+      booktitle={2016 IEEE International Conference on Image Processing (ICIP)},
+      title={Simple online and realtime tracking},
+      year={2016},
+      pages={3464-3468},
+      keywords={Benchmark testing;Complexity theory;Detectors;Kalman filters;Target tracking;Visualization;Computer Vision;Data Association;Detection;Multiple Object Tracking},
+      doi={10.1109/ICIP.2016.7533003},
+      month={Sept},}
 
 
 ### Dependencies:
