@@ -89,7 +89,7 @@ Using the [MOT challenge devkit](https://motchallenge.net/devkit/) the method pr
 
 ### Using SORT in your own project
 
-Below is the gist of how to instantiate and update SORT. See the '__main__' section of sort.py for a complete example.
+Below is the gist of how to instantiate and update SORT. See the ['__main__'](https://github.com/abewley/sort/blob/master/sort.py#L239) section of [sort.py](https://github.com/abewley/sort/blob/master/sort.py#L239) for a complete example.
     
     from sort import *
     
