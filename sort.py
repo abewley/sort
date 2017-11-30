@@ -17,7 +17,9 @@
 """
 from __future__ import print_function
 
-from numba import jit
+# TODO: Figure out how to install numba and uncomment this and @jit on iou method below.
+# Not using jit may have perf impact. Don't know if its significant.
+# from numba import jit
 import os.path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -29,7 +31,7 @@ import time
 import argparse
 from filterpy.kalman import KalmanFilter
 
-@jit
+# @jit
 def iou(bb_test,bb_gt):
   """
   Computes IUO between two bboxes in the form [x1,y1,x2,y2]
@@ -182,7 +184,7 @@ class Sort(object):
     self.trackers = []
     self.frame_count = 0
 
-  def update(self,dets):
+  def update(self, dets):
     """
     Params:
       dets - a numpy array of detections in the format [[x1,y1,x2,y2,score],[x1,y1,x2,y2,score],...]
@@ -205,29 +207,42 @@ class Sort(object):
     for t in reversed(to_del):
       self.trackers.pop(t)
     matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets,trks)
+    
+    # Maintain assocations to det. If no association, this array has -1
+    associations = [-1 for _ in  self.trackers]
 
     #update matched trackers with assigned detections
     for t,trk in enumerate(self.trackers):
       if(t not in unmatched_trks):
-        d = matched[np.where(matched[:,1]==t)[0],0]
+        # d_idx = np.array([i1, i2, i3])
+        d_idx = np.where(matched[:,1]==t)[0]
+        d = matched[d_idx, 0]
         trk.update(dets[d,:][0])
+        # We can do this because trackers are only added beyond
+        # this point. So this index will be valid.
+        associations[t] = d_idx[0]
 
     #create and initialise new trackers for unmatched detections
     for i in unmatched_dets:
         trk = KalmanBoxTracker(dets[i,:]) 
         self.trackers.append(trk)
+        associations.append(i)
+
     i = len(self.trackers)
+    ret_to_dets = []
     for trk in reversed(self.trackers):
         d = trk.get_state()[0]
         if((trk.time_since_update < 1) and (trk.hit_streak >= self.min_hits or self.frame_count <= self.min_hits)):
           ret.append(np.concatenate((d,[trk.id+1])).reshape(1,-1)) # +1 as MOT benchmark requires positive
+          ret_to_dets.append(associations[i-1])
+
         i -= 1
         #remove dead tracklet
         if(trk.time_since_update > self.max_age):
           self.trackers.pop(i)
     if(len(ret)>0):
-      return np.concatenate(ret)
-    return np.empty((0,5))
+      return np.concatenate(ret), ret_to_dets
+    return np.empty((0,5)), ret_to_dets
     
 def parse_args():
     """Parse input arguments."""
@@ -293,6 +308,3 @@ if __name__ == '__main__':
   print("Total Tracking took: %.3f for %d frames or %.1f FPS"%(total_time,total_frames,total_frames/total_time))
   if(display):
     print("Note: to get real runtime results run without the option: --display")
-  
-
-
