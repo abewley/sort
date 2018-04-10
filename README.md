@@ -16,14 +16,14 @@ SORT was initially described in an [arXiv tech report](http://arxiv.org/abs/1602
 This code has been tested on Mac OSX 10.10, and Ubuntu 14.04, with Python 2.7 (anaconda).
 
 **Note:** A significant proportion of SORT's accuracy is attributed to the detections.
-For your convenience, this repo also contains *Faster* RCNN detections for the MOT benchmark sequences in the benchmark format. To run the detector yourself please see the original [*Faster* RCNN project](https://github.com/ShaoqingRen/faster_rcnn) or the python reimplementation of [py-faster-rcnn](https://github.com/rbgirshick/py-faster-rcnn) by Ross Girshick.
+For your convenience, this repo also contains *Faster* RCNN detections for the MOT benchmark sequences in the [benchmark format](https://motchallenge.net/instructions/). To run the detector yourself please see the original [*Faster* RCNN project](https://github.com/ShaoqingRen/faster_rcnn) or the python reimplementation of [py-faster-rcnn](https://github.com/rbgirshick/py-faster-rcnn) by Ross Girshick.
 
 **Also see:**
 A new and improved version of SORT with a Deep Association Metric implemented in tensorflow is available at [https://github.com/nwojke/deep_sort](https://github.com/nwojke/deep_sort) .
 
 ### License
 
-SORT is released under the GPL License (refer to the LICENSE file for details) to promote the open use of the tracker and future improvements. If you require a permissive license contact Alex (alex@dynamicdetection.com).
+SORT is released under the GPL License (refer to the LICENSE file for details) to promote the open use of the tracker and future improvements. If you require a permissive license contact Alex (alex@bewley.ai).
 
 ### Citing SORT
 
@@ -42,7 +42,7 @@ If you find this repo useful in your research, please consider citing:
 
 ### Dependencies:
 
-0. [`scikit-learn`](http://scikit-learn.org/stable/)
+1. [`scikit-learn`](http://scikit-learn.org/stable/)
 0. [`scikit-image`](http://scikit-image.org/download)
 0. [`FilterPy`](https://github.com/rlabbe/filterpy)
 ```
