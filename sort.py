@@ -47,6 +47,18 @@ def iou(bb_test,bb_gt):
     + (bb_gt[2]-bb_gt[0])*(bb_gt[3]-bb_gt[1]) - wh)
   return(o)
 
+def relative_distance(bb_test,bb_gt):
+  center_test = [(bb_test[0] + bb_test[2])/2.0, (bb_test[1] + bb_test[3])/2.0]
+  center_gt = [(bb_gt[0] + bb_gt[2])/2.0, (bb_gt[1] + bb_gt[3])/2.0]
+  
+  avg_width = (bb_gt[2] - bb_gt[0] + bb_test[2] - bb_test[0])/2.0
+
+  #negative sign because original cost function iou returns the negative cost
+  return  -np.linalg.norm(np.array(center_test) - np.array(center_gt))/avg_width
+
+def assignment_cost(bb_test,bb_gt,cost_function='relative_distancce'):
+  return eval(cost_function)(bb_test,bb_gt)
+
 def convert_bbox_to_z(bbox):
   """
   Takes a bounding box in the form [x1,y1,x2,y2] and returns z in the form
@@ -133,20 +145,22 @@ class KalmanBoxTracker(object):
     """
     return convert_x_to_bbox(self.kf.x)
 
-def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
+def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3,cost_function='relative_distance'):
   """
   Assigns detections to tracked object (both represented as bounding boxes)
 
   Returns 3 lists of matches, unmatched_detections and unmatched_trackers
   """
+  print('Cost function being used: {}'.format(cost_function))
+
   if(len(trackers)==0):
     return np.empty((0,2),dtype=int), np.arange(len(detections)), np.empty((0,5),dtype=int)
-  iou_matrix = np.zeros((len(detections),len(trackers)),dtype=np.float32)
+  cost_matrix = np.zeros((len(detections),len(trackers)),dtype=np.float32)
 
   for d,det in enumerate(detections):
     for t,trk in enumerate(trackers):
-      iou_matrix[d,t] = iou(det,trk)
-  matched_indices = linear_assignment(-iou_matrix)
+      cost_matrix[d,t] = assignment_cost(det,trk,cost_function=cost_function)
+  matched_indices = linear_assignment(-cost_matrix)
 
   unmatched_detections = []
   for d,det in enumerate(detections):
@@ -160,7 +174,7 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
   #filter out matched with low IOU
   matches = []
   for m in matched_indices:
-    if(iou_matrix[m[0],m[1]]<iou_threshold):
+    if(cost_function == 'iou' and cost_matrix[m[0],m[1]]<iou_threshold):
       unmatched_detections.append(m[0])
       unmatched_trackers.append(m[1])
     else:
@@ -171,7 +185,6 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
     matches = np.concatenate(matches,axis=0)
 
   return matches, np.array(unmatched_detections), np.array(unmatched_trackers)
-
 
 
 class Sort(object):
