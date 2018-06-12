@@ -99,9 +99,7 @@ class KalmanBoxTracker(object):
     self.id = KalmanBoxTracker.count
     KalmanBoxTracker.count += 1
     self.history = []
-    self.hits = 0
     self.hit_streak = 0
-    self.age = 0
 
   def update(self,bbox):
     """
@@ -109,7 +107,6 @@ class KalmanBoxTracker(object):
     """
     self.time_since_update = 0
     self.history = []
-    self.hits += 1
     self.hit_streak += 1
     self.kf.update(convert_bbox_to_z(bbox))
 
@@ -120,9 +117,12 @@ class KalmanBoxTracker(object):
     if((self.kf.x[6]+self.kf.x[2])<=0):
       self.kf.x[6] *= 0.0
     self.kf.predict()
-    self.age += 1
-    if(self.time_since_update>0):
-      self.hit_streak = 0
+
+    # NB(@vikesh): Maintain hit streak even if time_since_update > 0
+    # This is necessary to for good smoothing. Otherwise, when the ID is re-acquired,
+    # the hit_streak is 0 and the caller does not include this box in the return value
+    # if(self.time_since_update>0):
+    #   self.hit_streak = 0
     self.time_since_update += 1
     self.history.append(convert_x_to_bbox(self.kf.x))
     return self.history[-1]
@@ -175,7 +175,7 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
 
 
 class Sort(object):
-  def __init__(self,max_age=1,min_hits=3):
+  def __init__(self,max_age=5,min_hits=3):
     """
     Sets key parameters for SORT
     """
@@ -184,11 +184,12 @@ class Sort(object):
     self.trackers = []
     self.frame_count = 0
 
-  def update(self, dets):
+  def update(self, dets, iou_threshold=0.3):
     """
     Params:
       dets - a numpy array of detections in the format [[x1,y1,x2,y2,score],[x1,y1,x2,y2,score],...]
     Requires: this method must be called once for each frame even with empty detections.
+
     Returns the a similar array, where the last column is the object ID.
 
     NOTE: The number of objects returned may differ from the number of detections provided.
@@ -206,7 +207,7 @@ class Sort(object):
     trks = np.ma.compress_rows(np.ma.masked_invalid(trks))
     for t in reversed(to_del):
       self.trackers.pop(t)
-    matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets,trks)
+    matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets,trks, iou_threshold=iou_threshold)
     
     # Maintain assocations to det. If no association, this array has -1
     associations = [-1 for _ in  self.trackers]
@@ -224,22 +225,26 @@ class Sort(object):
 
     #create and initialise new trackers for unmatched detections
     for i in unmatched_dets:
-        trk = KalmanBoxTracker(dets[i,:]) 
+        trk = KalmanBoxTracker(dets[i,:])
+        # Attach class to new trackers
         self.trackers.append(trk)
         associations.append(i)
 
-    i = len(self.trackers)
+    i = len(self.trackers) - 1
     ret_to_dets = []
     for trk in reversed(self.trackers):
         d = trk.get_state()[0]
-        if((trk.time_since_update < 1) and (trk.hit_streak >= self.min_hits or self.frame_count <= self.min_hits)):
+        # If the tracker is valid, add trivially if unmatched (for smoothing) or validate hits
+        if (trk.time_since_update < self.max_age) and (i in unmatched_trks or trk.hit_streak >= self.min_hits or self.frame_count <= self.min_hits):
           ret.append(np.concatenate((d,[trk.id+1])).reshape(1,-1)) # +1 as MOT benchmark requires positive
+          # NB: This may be -1 if tracker was unmatched
           ret_to_dets.append(associations[i-1])
 
-        i -= 1
-        #remove dead tracklet
-        if(trk.time_since_update > self.max_age):
+        # Remove dead tracklet
+        if trk.time_since_update > self.max_age:
           self.trackers.pop(i)
+
+        i -= 1
     if(len(ret)>0):
       return np.concatenate(ret), ret_to_dets
     return np.empty((0,5)), ret_to_dets
