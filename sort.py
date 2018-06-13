@@ -17,7 +17,9 @@
 """
 from __future__ import print_function
 
-from numba import jit
+# TODO: Figure out how to install numba and uncomment this and @jit on iou method below.
+# Not using jit may have perf impact. Don't know if its significant.
+# from numba import jit
 import os.path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -29,7 +31,11 @@ import time
 import argparse
 from filterpy.kalman import KalmanFilter
 
-@jit
+class CostFunction:
+    IOU = 'iou'
+    L2 = 'l2'
+
+# @jit
 def iou(bb_test,bb_gt):
   """
   Computes IUO between two bboxes in the form [x1,y1,x2,y2]
@@ -44,6 +50,18 @@ def iou(bb_test,bb_gt):
   o = wh / ((bb_test[2]-bb_test[0])*(bb_test[3]-bb_test[1])
     + (bb_gt[2]-bb_gt[0])*(bb_gt[3]-bb_gt[1]) - wh)
   return(o)
+
+def l2(bb_test,bb_gt):
+  center_test = [(bb_test[0] + bb_test[2])/2.0, (bb_test[1] + bb_test[3])/2.0]
+  center_gt = [(bb_gt[0] + bb_gt[2])/2.0, (bb_gt[1] + bb_gt[3])/2.0]
+  
+  avg_width = (bb_gt[2] - bb_gt[0] + bb_test[2] - bb_test[0])/2.0
+
+  #negative sign because original cost function iou returns the negative cost
+  return  -np.linalg.norm(np.array(center_test) - np.array(center_gt))/avg_width
+
+def assignment_cost(bb_test,bb_gt,cost_function='relative_distancce'):
+  return eval(cost_function)(bb_test,bb_gt)
 
 def convert_bbox_to_z(bbox):
   """
@@ -97,9 +115,7 @@ class KalmanBoxTracker(object):
     self.id = KalmanBoxTracker.count
     KalmanBoxTracker.count += 1
     self.history = []
-    self.hits = 0
     self.hit_streak = 0
-    self.age = 0
 
   def update(self,bbox):
     """
@@ -107,7 +123,6 @@ class KalmanBoxTracker(object):
     """
     self.time_since_update = 0
     self.history = []
-    self.hits += 1
     self.hit_streak += 1
     self.kf.update(convert_bbox_to_z(bbox))
 
@@ -118,9 +133,12 @@ class KalmanBoxTracker(object):
     if((self.kf.x[6]+self.kf.x[2])<=0):
       self.kf.x[6] *= 0.0
     self.kf.predict()
-    self.age += 1
-    if(self.time_since_update>0):
-      self.hit_streak = 0
+
+    # NB(@vikesh): Maintain hit streak even if time_since_update > 0
+    # This is necessary to for good smoothing. Otherwise, when the ID is re-acquired,
+    # the hit_streak is 0 and the caller does not include this box in the return value
+    # if(self.time_since_update>0):
+    #   self.hit_streak = 0
     self.time_since_update += 1
     self.history.append(convert_x_to_bbox(self.kf.x))
     return self.history[-1]
@@ -131,26 +149,31 @@ class KalmanBoxTracker(object):
     """
     return convert_x_to_bbox(self.kf.x)
 
-def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
+def associate_detections_to_trackers(detections, trackers, threshold = 0.3, cost_function=CostFunction.IOU):
   """
   Assigns detections to tracked object (both represented as bounding boxes)
 
   Returns 3 lists of matches, unmatched_detections and unmatched_trackers
   """
-  if(len(trackers)==0):
+  if len(trackers) == 0:
     return np.empty((0,2),dtype=int), np.arange(len(detections)), np.empty((0,5),dtype=int)
-  iou_matrix = np.zeros((len(detections),len(trackers)),dtype=np.float32)
+
+  cost_matrix = np.zeros((len(detections),len(trackers)),dtype=np.float32)
 
   for d,det in enumerate(detections):
     for t,trk in enumerate(trackers):
-      iou_matrix[d,t] = iou(det,trk)
-  matched_indices = linear_assignment(-iou_matrix)
+      cost_matrix[d,t] = assignment_cost(det, trk, cost_function=cost_function)
+
+  matched_indices = linear_assignment(-cost_matrix)
 
   unmatched_detections = []
+
   for d,det in enumerate(detections):
-    if(d not in matched_indices[:,0]):
+    if (d not in matched_indices[:,0]):
       unmatched_detections.append(d)
+
   unmatched_trackers = []
+
   for t,trk in enumerate(trackers):
     if(t not in matched_indices[:,1]):
       unmatched_trackers.append(t)
@@ -158,12 +181,13 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
   #filter out matched with low IOU
   matches = []
   for m in matched_indices:
-    if(iou_matrix[m[0],m[1]]<iou_threshold):
+    c = cost_matrix[m[0],m[1]]
+    if (cost_function == CostFunction.IOU and c < threshold) or (cost_function == CostFunction.L2 and c > threshold):
       unmatched_detections.append(m[0])
       unmatched_trackers.append(m[1])
     else:
       matches.append(m.reshape(1,2))
-  if(len(matches)==0):
+  if (len(matches)==0):
     matches = np.empty((0,2),dtype=int)
   else:
     matches = np.concatenate(matches,axis=0)
@@ -171,9 +195,8 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
   return matches, np.array(unmatched_detections), np.array(unmatched_trackers)
 
 
-
 class Sort(object):
-  def __init__(self,max_age=1,min_hits=3):
+  def __init__(self,max_age=5,min_hits=3):
     """
     Sets key parameters for SORT
     """
@@ -182,11 +205,12 @@ class Sort(object):
     self.trackers = []
     self.frame_count = 0
 
-  def update(self,dets):
+  def update(self, dets, threshold=0.3, cost_function=CostFunction.IOU):
     """
     Params:
       dets - a numpy array of detections in the format [[x1,y1,x2,y2,score],[x1,y1,x2,y2,score],...]
     Requires: this method must be called once for each frame even with empty detections.
+
     Returns the a similar array, where the last column is the object ID.
 
     NOTE: The number of objects returned may differ from the number of detections provided.
@@ -204,30 +228,50 @@ class Sort(object):
     trks = np.ma.compress_rows(np.ma.masked_invalid(trks))
     for t in reversed(to_del):
       self.trackers.pop(t)
-    matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets,trks)
+
+    matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets,trks, threshold=threshold, cost_function=cost_function)
+    
+    # Maintain assocations to det. If no association, this array has -1
+    associations = [-1 for _ in  self.trackers]
 
     #update matched trackers with assigned detections
     for t,trk in enumerate(self.trackers):
       if(t not in unmatched_trks):
-        d = matched[np.where(matched[:,1]==t)[0],0]
+        # d_idx = np.array([i1, i2, i3])
+        d_idx = np.where(matched[:,1]==t)[0]
+        d = matched[d_idx, 0]
         trk.update(dets[d,:][0])
+        # We can do this because trackers are only added beyond
+        # this point. So this index will be valid.
+        associations[t] = d_idx[0]
 
     #create and initialise new trackers for unmatched detections
     for i in unmatched_dets:
-        trk = KalmanBoxTracker(dets[i,:]) 
+        trk = KalmanBoxTracker(dets[i,:])
+        # Attach class to new trackers
         self.trackers.append(trk)
-    i = len(self.trackers)
+        associations.append(i)
+
+    i = len(self.trackers) - 1
+    ret_to_dets = []
+
     for trk in reversed(self.trackers):
         d = trk.get_state()[0]
-        if((trk.time_since_update < 1) and (trk.hit_streak >= self.min_hits or self.frame_count <= self.min_hits)):
+        # If the tracker is valid, add trivially if unmatched (for smoothing) or validate hits
+        if (trk.time_since_update < self.max_age) and (i in unmatched_trks or trk.hit_streak >= self.min_hits or self.frame_count <= self.min_hits):
           ret.append(np.concatenate((d,[trk.id+1])).reshape(1,-1)) # +1 as MOT benchmark requires positive
-        i -= 1
-        #remove dead tracklet
-        if(trk.time_since_update > self.max_age):
+          # NB: This may be -1 if tracker was unmatched
+          ret_to_dets.append(associations[i])
+
+        # Remove dead tracklet
+        if trk.time_since_update > self.max_age:
           self.trackers.pop(i)
+
+        i -= 1
+
     if(len(ret)>0):
-      return np.concatenate(ret)
-    return np.empty((0,5))
+      return np.concatenate(ret), ret_to_dets
+    return np.empty((0,5)), ret_to_dets
     
 def parse_args():
     """Parse input arguments."""
@@ -293,6 +337,3 @@ if __name__ == '__main__':
   print("Total Tracking took: %.3f for %d frames or %.1f FPS"%(total_time,total_frames,total_frames/total_time))
   if(display):
     print("Note: to get real runtime results run without the option: --display")
-  
-
-
