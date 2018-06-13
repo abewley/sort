@@ -31,6 +31,10 @@ import time
 import argparse
 from filterpy.kalman import KalmanFilter
 
+class CostFunction:
+    IOU = 'iou'
+    L2 = 'l2'
+
 # @jit
 def iou(bb_test,bb_gt):
   """
@@ -47,7 +51,7 @@ def iou(bb_test,bb_gt):
     + (bb_gt[2]-bb_gt[0])*(bb_gt[3]-bb_gt[1]) - wh)
   return(o)
 
-def relative_distance(bb_test,bb_gt):
+def l2(bb_test,bb_gt):
   center_test = [(bb_test[0] + bb_test[2])/2.0, (bb_test[1] + bb_test[3])/2.0]
   center_gt = [(bb_gt[0] + bb_gt[2])/2.0, (bb_gt[1] + bb_gt[3])/2.0]
   
@@ -145,28 +149,31 @@ class KalmanBoxTracker(object):
     """
     return convert_x_to_bbox(self.kf.x)
 
-def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3,cost_function='relative_distance'):
+def associate_detections_to_trackers(detections, trackers, threshold = 0.3, cost_function=CostFunction.IOU):
   """
   Assigns detections to tracked object (both represented as bounding boxes)
 
   Returns 3 lists of matches, unmatched_detections and unmatched_trackers
   """
-  print('Cost function being used: {}'.format(cost_function))
-
-  if(len(trackers)==0):
+  if len(trackers) == 0:
     return np.empty((0,2),dtype=int), np.arange(len(detections)), np.empty((0,5),dtype=int)
+
   cost_matrix = np.zeros((len(detections),len(trackers)),dtype=np.float32)
 
   for d,det in enumerate(detections):
     for t,trk in enumerate(trackers):
-      cost_matrix[d,t] = assignment_cost(det,trk,cost_function=cost_function)
+      cost_matrix[d,t] = assignment_cost(det, trk, cost_function=cost_function)
+
   matched_indices = linear_assignment(-cost_matrix)
 
   unmatched_detections = []
+
   for d,det in enumerate(detections):
-    if(d not in matched_indices[:,0]):
+    if (d not in matched_indices[:,0]):
       unmatched_detections.append(d)
+
   unmatched_trackers = []
+
   for t,trk in enumerate(trackers):
     if(t not in matched_indices[:,1]):
       unmatched_trackers.append(t)
@@ -174,7 +181,7 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3,cos
   #filter out matched with low IOU
   matches = []
   for m in matched_indices:
-    if(cost_function == 'iou' and cost_matrix[m[0],m[1]]<iou_threshold):
+    if (cost_function == CostFunction.IOU and cost_matrix[m[0],m[1]] < threshold):
       unmatched_detections.append(m[0])
       unmatched_trackers.append(m[1])
     else:
@@ -197,7 +204,7 @@ class Sort(object):
     self.trackers = []
     self.frame_count = 0
 
-  def update(self, dets, iou_threshold=0.3):
+  def update(self, dets, threshold=0.3):
     """
     Params:
       dets - a numpy array of detections in the format [[x1,y1,x2,y2,score],[x1,y1,x2,y2,score],...]
@@ -220,7 +227,7 @@ class Sort(object):
     trks = np.ma.compress_rows(np.ma.masked_invalid(trks))
     for t in reversed(to_del):
       self.trackers.pop(t)
-    matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets,trks, iou_threshold=iou_threshold)
+    matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets,trks, threshold=threshold)
     
     # Maintain assocations to det. If no association, this array has -1
     associations = [-1 for _ in  self.trackers]
@@ -245,6 +252,7 @@ class Sort(object):
 
     i = len(self.trackers) - 1
     ret_to_dets = []
+
     for trk in reversed(self.trackers):
         d = trk.get_state()[0]
         # If the tracker is valid, add trivially if unmatched (for smoothing) or validate hits
