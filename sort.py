@@ -181,12 +181,13 @@ def associate_detections_to_trackers(detections, trackers, threshold = 0.3, cost
   #filter out matched with low IOU
   matches = []
   for m in matched_indices:
-    if (cost_function == CostFunction.IOU and cost_matrix[m[0],m[1]] < threshold):
+    c = cost_matrix[m[0],m[1]]
+    if (cost_function == CostFunction.IOU and c < threshold) or (cost_function == CostFunction.L2 and c > threshold):
       unmatched_detections.append(m[0])
       unmatched_trackers.append(m[1])
     else:
       matches.append(m.reshape(1,2))
-  if(len(matches)==0):
+  if (len(matches)==0):
     matches = np.empty((0,2),dtype=int)
   else:
     matches = np.concatenate(matches,axis=0)
@@ -204,7 +205,7 @@ class Sort(object):
     self.trackers = []
     self.frame_count = 0
 
-  def update(self, dets, threshold=0.3):
+  def update(self, dets, threshold=0.3, cost_function=CostFunction.IOU):
     """
     Params:
       dets - a numpy array of detections in the format [[x1,y1,x2,y2,score],[x1,y1,x2,y2,score],...]
@@ -227,7 +228,8 @@ class Sort(object):
     trks = np.ma.compress_rows(np.ma.masked_invalid(trks))
     for t in reversed(to_del):
       self.trackers.pop(t)
-    matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets,trks, threshold=threshold)
+
+    matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets,trks, threshold=threshold, cost_function=cost_function)
     
     # Maintain assocations to det. If no association, this array has -1
     associations = [-1 for _ in  self.trackers]
