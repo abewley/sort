@@ -238,13 +238,14 @@ class Sort(object):
         if (trk.time_since_update < self.max_age) and (i in unmatched_trks or trk.hit_streak >= self.min_hits or self.frame_count <= self.min_hits):
           ret.append(np.concatenate((d,[trk.id+1])).reshape(1,-1)) # +1 as MOT benchmark requires positive
           # NB: This may be -1 if tracker was unmatched
-          ret_to_dets.append(associations[i-1])
+          ret_to_dets.append(associations[i])
 
         # Remove dead tracklet
         if trk.time_since_update > self.max_age:
           self.trackers.pop(i)
 
         i -= 1
+
     if(len(ret)>0):
       return np.concatenate(ret), ret_to_dets
     return np.empty((0,5)), ret_to_dets
