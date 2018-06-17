@@ -5,7 +5,6 @@ A simple online and realtime tracking algorithm for 2D multiple object tracking 
 See an example [video here](https://motchallenge.net/movies/ETH-Linthescher-SORT.mp4).
 
 By Alex Bewley  
-[DynamicDetection.com](http://www.dynamicdetection.com)
 
 ### Introduction
 
@@ -42,11 +41,14 @@ If you find this repo useful in your research, please consider citing:
 
 ### Dependencies:
 
+This code makes use of the following packages:
 1. [`scikit-learn`](http://scikit-learn.org/stable/)
 0. [`scikit-image`](http://scikit-image.org/download)
 0. [`FilterPy`](https://github.com/rlabbe/filterpy)
+
+To install required dependencies run:
 ```
-$ pip search filterpy
+$ pip install -r requirements.txt
 ```
 
 
@@ -76,15 +78,15 @@ To display the results you need to:
 
 Using the [MOT challenge devkit](https://motchallenge.net/devkit/) the method produces the following results (as described in the paper).
 
- Sequence       | Rcll  Prcn   FAR| GT  MT  PT  ML|   FP    FN  IDs   FM|  MOTA  MOTP MOTAL
---------------- |:---------------:|:-------------:|:-------------------:|:------------------:
- TUD-Campus     | 68.5  94.3  0.21|  8   6   2   0|   15   113    6    9|  62.7  73.7  64.1
- ETH-Sunnyday   | 77.5  81.9  0.90| 30  11  16   3|  319   418   22   54|  59.1  74.4  60.3
- ETH-Pedcross2  | 51.9  90.8  0.39|133  17  60  56|  330  3014   77  103|  45.4  74.8  46.6
- ADL-Rundle-8   | 44.3  75.8  1.47| 28   6  16   6|  959  3781  103  211|  28.6  71.1  30.1
- Venice-2       | 42.5  64.8  2.75| 26   7   9  10| 1650  4109   57  106|  18.6  73.4  19.3
- KITTI-17       | 67.1  92.3  0.26|  9   1   8   0|   38   225    9   16|  60.2  72.3  61.3
- *Overall*      | 49.5  77.5  1.24|234  48 111  75| 3311 11660  274  499|  34.0  73.3  35.1
+ Sequence       | Rcll | Prcn |  FAR | GT  MT  PT  ML|   FP    FN  IDs   FM|  MOTA  MOTP MOTAL
+--------------- |:----:|:----:|:----:|:-------------:|:-------------------:|:------------------:
+ TUD-Campus     | 68.5 | 94.3 | 0.21 |  8   6   2   0|   15   113    6    9|  62.7  73.7  64.1
+ ETH-Sunnyday   | 77.5 | 81.9 | 0.90 | 30  11  16   3|  319   418   22   54|  59.1  74.4  60.3
+ ETH-Pedcross2  | 51.9 | 90.8 | 0.39 | 133  17  60  56|  330  3014   77  103|  45.4  74.8  46.6
+ ADL-Rundle-8   | 44.3 | 75.8 | 1.47 | 28   6  16   6|  959  3781  103  211|  28.6  71.1  30.1
+ Venice-2       | 42.5 | 64.8 | 2.75 | 26   7   9  10| 1650  4109   57  106|  18.6  73.4  19.3
+ KITTI-17       | 67.1 | 92.3 | 0.26 |  9   1   8   0|   38   225    9   16|  60.2  72.3  61.3
+ *Overall*      | 49.5 | 77.5 | 1.24 | 234  48 111  75| 3311 11660  274  499|  34.0  73.3  35.1
 
 
 ### Using SORT in your own project
