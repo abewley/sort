@@ -137,38 +137,28 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
 
   Returns 3 lists of matches, unmatched_detections and unmatched_trackers
   """
-  if(len(trackers)==0):
-    return np.empty((0,2),dtype=int), np.arange(len(detections)), np.empty((0,5),dtype=int)
-  iou_matrix = np.zeros((len(detections),len(trackers)),dtype=np.float32)
+  lendet = len(detections)
+  lentrk = len(trackers)
+
+  if(lentrk==0):
+    return np.empty((0,2),dtype=int), np.arange(lendet), np.empty((0,5),dtype=int)
+  iou_matrix = np.zeros((lendet,lentrk),dtype=np.float32)
 
   for d,det in enumerate(detections):
     for t,trk in enumerate(trackers):
       iou_matrix[d,t] = iou(det,trk)
+  iou_matrix[iou_matrix < iou_threshold] = 0.
   matched_indices = linear_assignment(-iou_matrix)
 
-  unmatched_detections = []
-  for d,det in enumerate(detections):
-    if(d not in matched_indices[:,0]):
-      unmatched_detections.append(d)
-  unmatched_trackers = []
-  for t,trk in enumerate(trackers):
-    if(t not in matched_indices[:,1]):
-      unmatched_trackers.append(t)
+  costs = iou_matrix[tuple(matched_indices.T)] # select values from cost matrix by matched indices
+  matches = matched_indices[np.where(costs)[0]] # remove zero values from matches
+  unmatched_detections = np.where(np.in1d(range(lendet), matches[:,0], invert=True))[0]
+  unmatched_trackers = np.where(np.in1d(range(lentrk), matches[:,1], invert=True))[0]
 
-  #filter out matched with low IOU
-  matches = []
-  for m in matched_indices:
-    if(iou_matrix[m[0],m[1]]<iou_threshold):
-      unmatched_detections.append(m[0])
-      unmatched_trackers.append(m[1])
-    else:
-      matches.append(m.reshape(1,2))
   if(len(matches)==0):
     matches = np.empty((0,2),dtype=int)
-  else:
-    matches = np.concatenate(matches,axis=0)
 
-  return matches, np.array(unmatched_detections), np.array(unmatched_trackers)
+  return matches, unmatched_detections, unmatched_trackers
 
 
 
