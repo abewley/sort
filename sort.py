@@ -74,7 +74,7 @@ def convert_x_to_bbox(x,score=None):
 
 class KalmanBoxTracker(object):
   """
-  This class represents the internel state of individual tracked objects observed as bbox.
+  This class represents the internal state of individual tracked objects observed as bbox.
   """
   count = 0
   def __init__(self,bbox):
