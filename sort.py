@@ -18,7 +18,7 @@
 from __future__ import print_function
 
 from numba import jit
-import os.path as osp
+import os
 import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
@@ -87,7 +87,7 @@ class KalmanBoxTracker(object):
     Initialises a tracker using initial bounding box.
     """
     #define constant velocity model
-    self.kf = KalmanFilter(dim_x=7, dim_z=4)
+    self.kf = KalmanFilter(dim_x=7, dim_z=4, compute_log_likelihood=False)
     self.kf.F = np.array([[1,0,0,0,1,0,0],[0,1,0,0,0,1,0],[0,0,1,0,0,0,1],[0,0,0,1,0,0,0],  [0,0,0,0,1,0,0],[0,0,0,0,0,1,0],[0,0,0,0,0,0,1]])
     self.kf.H = np.array([[1,0,0,0,0,0,0],[0,1,0,0,0,0,0],[0,0,1,0,0,0,0],[0,0,0,1,0,0,0]])
 
@@ -266,15 +266,15 @@ if __name__ == '__main__':
   total_frames = 0
   colours = np.random.rand(32, 3) #used only for display
   if(display):
-    if not osp.exists('mot_benchmark'):
+    if not os.path.exists('mot_benchmark'):
       print('\n\tERROR: mot_benchmark link not found!\n\n    Create a symbolic link to the MOT benchmark\n    (https://motchallenge.net/data/2D_MOT_2015/#download). E.g.:\n\n    $ ln -s /path/to/MOT2015_challenge/2DMOT2015 mot_benchmark\n\n')
       exit()
     plt.ion()
     fig = plt.figure()
 
-  if not osp.exists('output'):
+  if not os.path.exists('output'):
     os.makedirs('output')
-  pattern = osp.join(args.seq_path, phase, '*', 'det', 'det.txt')
+  pattern = os.path.join(args.seq_path, phase, '*', 'det', 'det.txt')
   for seq_dets_fn in glob.glob(pattern):
     mot_tracker = Sort() #create instance of the SORT tracker
     print(seq_dets_fn)
