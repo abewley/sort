@@ -12,8 +12,6 @@ SORT is a barebones implementation of a visual multiple object tracking framewor
 
 SORT was initially described in [this paper](http://arxiv.org/abs/1602.00763). At the time of the initial publication, SORT was ranked the best *open source* multiple object tracker on the [MOT benchmark](https://motchallenge.net/results/2D_MOT_2015/).
 
-This code has been tested on Mac OSX 10.10, and Ubuntu 14.04, with Python 2.7 (anaconda).
-
 **Note:** A significant proportion of SORT's accuracy is attributed to the detections.
 For your convenience, this repo also contains *Faster* RCNN detections for the MOT benchmark sequences in the [benchmark format](https://motchallenge.net/instructions/). To run the detector yourself please see the original [*Faster* RCNN project](https://github.com/ShaoqingRen/faster_rcnn) or the python reimplementation of [py-faster-rcnn](https://github.com/rbgirshick/py-faster-rcnn) by Ross Girshick.
 
@@ -41,11 +39,6 @@ If you find this repo useful in your research, please consider citing:
 
 ### Dependencies:
 
-This code makes use of the following packages:
-1. [`scikit-learn`](http://scikit-learn.org/stable/)
-0. [`scikit-image`](http://scikit-image.org/download)
-0. [`FilterPy`](https://github.com/rlabbe/filterpy)
-
 To install required dependencies run:
 ```
 $ pip install -r requirements.txt
@@ -63,7 +56,7 @@ $ python sort.py
 
 To display the results you need to:
 
-0. Download the [2D MOT 2015 benchmark dataset](https://motchallenge.net/data/2D_MOT_2015/#download)
+1. Download the [2D MOT 2015 benchmark dataset](https://motchallenge.net/data/2D_MOT_2015/#download)
 0. Create a symbolic link to the dataset
   ```
   $ ln -s /path/to/MOT2015_challenge/data/2DMOT2015 mot_benchmark
