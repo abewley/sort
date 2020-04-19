@@ -162,8 +162,6 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
     for t,trk in enumerate(trackers):
       iou_matrix[d,t] = iou(det,trk)
 
-  # TODO (bewley): remove rows and cols iou.max() < threshold
-
   if min(iou_matrix.shape) > 0:
     a = (iou_matrix > iou_threshold).astype(np.int32)
     if a.sum(1).max() == 1 and a.sum(0).max() == 1:
@@ -287,7 +285,6 @@ if __name__ == '__main__':
   pattern = os.path.join(args.seq_path, phase, '*', 'det', 'det.txt')
   for seq_dets_fn in glob.glob(pattern):
     mot_tracker = Sort() #create instance of the SORT tracker
-    print(seq_dets_fn)
     seq_dets = np.loadtxt(seq_dets_fn, delimiter=',')
     seq = seq_dets_fn[pattern.find('*'):].split('/')[0]
     
