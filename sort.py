@@ -17,7 +17,6 @@
 """
 from __future__ import print_function
 
-from numba import jit
 import os
 import numpy as np
 import matplotlib
@@ -30,6 +29,12 @@ import glob
 import time
 import argparse
 from filterpy.kalman import KalmanFilter
+
+try:
+  from numba import jit
+except:
+  def jit(func):
+    return func
 
 np.random.seed(0)
 
