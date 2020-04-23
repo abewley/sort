@@ -1,6 +1,6 @@
 """
     SORT: A Simple, Online and Realtime Tracker
-    Copyright (C) 2016 Alex Bewley alex@dynamicdetection.com
+    Copyright (C) 2016-2020 Alex Bewley alex@bewley.ai
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@ def linear_assignment(cost_matrix):
     x, y = linear_sum_assignment(cost_matrix)
     return np.array(list(zip(x, y)))
 
-  
 
 @jit
 def iou(bb_test, bb_gt):
@@ -62,6 +61,7 @@ def iou(bb_test, bb_gt):
     + (bb_gt[2] - bb_gt[0]) * (bb_gt[3] - bb_gt[1]) - wh)
   return(o)
 
+
 def convert_bbox_to_z(bbox):
   """
   Takes a bounding box in the form [x1,y1,x2,y2] and returns z in the form
@@ -75,6 +75,7 @@ def convert_bbox_to_z(bbox):
   s = w * h    #scale is just area
   r = w / float(h)
   return np.array([x, y, s, r]).reshape((4, 1))
+
 
 def convert_x_to_bbox(x,score=None):
   """
@@ -99,7 +100,7 @@ class KalmanBoxTracker(object):
     Initialises a tracker using initial bounding box.
     """
     #define constant velocity model
-    self.kf = KalmanFilter(dim_x=7, dim_z=4, compute_log_likelihood=False)
+    self.kf = KalmanFilter(dim_x=7, dim_z=4) 
     self.kf.F = np.array([[1,0,0,0,1,0,0],[0,1,0,0,0,1,0],[0,0,1,0,0,0,1],[0,0,0,1,0,0,0],  [0,0,0,0,1,0,0],[0,0,0,0,0,1,0],[0,0,0,0,0,0,1]])
     self.kf.H = np.array([[1,0,0,0,0,0,0],[0,1,0,0,0,0,0],[0,0,1,0,0,0,0],[0,0,0,1,0,0,0]])
 
@@ -147,6 +148,7 @@ class KalmanBoxTracker(object):
     Returns the current bounding box estimate.
     """
     return convert_x_to_bbox(self.kf.x)
+
 
 def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
   """
@@ -233,10 +235,6 @@ class Sort(object):
     # update matched trackers with assigned detections
     for m in matched:
       self.trackers[m[1]].update(dets[m[0], :])
-    #for t, trk in enumerate(self.trackers):
-    #  if(t not in unmatched_trks):
-    #    d = matched[np.where(matched[:,1]==t)[0],0]
-    #    trk.update(dets[d,:][0])
 
     # create and initialise new trackers for unmatched detections
     for i in unmatched_dets:
@@ -312,7 +310,6 @@ if __name__ == '__main__':
           if(display):
             d = d.astype(np.int32)
             ax1.add_patch(patches.Rectangle((d[0],d[1]),d[2]-d[0],d[3]-d[1],fill=False,lw=3,ec=colours[d[4]%32,:]))
-            #ax1.set_adjustable('box-forced')
 
         if(display):
           fig.canvas.flush_events()

@@ -1,4 +1,4 @@
-filterpy==1.4.1
+filterpy==1.4.5
 numba==0.38.1
 scikit-image==0.14.0
 lap==0.4.0
