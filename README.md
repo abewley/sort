@@ -39,7 +39,7 @@ If you find this repo useful in your research, please consider citing:
 
 ### Dependencies:
 
-To install required dependencies run:
+To install required dependencies for SORT and the demo, run:
 ```
 $ pip install -r requirements.txt
 ```
@@ -51,7 +51,7 @@ To run the tracker with the provided detections:
 
 ```
 $ cd path/to/sort
-$ python sort.py
+$ python demo.py
 ```
 
 To display the results you need to:
@@ -63,7 +63,7 @@ To display the results you need to:
   ```
 0. Run the demo with the ```--display``` flag
   ```
-  $ python sort.py --display
+  $ python demo.py --display
   ```
 
 
@@ -84,7 +84,9 @@ Using the [MOT challenge devkit](https://motchallenge.net/devkit/) the method pr
 
 ### Using SORT in your own project
 
-Below is the gist of how to instantiate and update SORT. See the ['__main__'](https://github.com/abewley/sort/blob/master/sort.py#L239) section of [sort.py](https://github.com/abewley/sort/blob/master/sort.py#L239) for a complete example.
+To use SORT in your project, you can either install it locally with `pip install .` or simply copy [sort.py](sort/sort.py).
+
+Below is the gist of how to instantiate and update SORT. See the [`__main__`](demo.py#L28) section of [demo.py](demo.py) for a complete example.
     
     from sort import *
     
