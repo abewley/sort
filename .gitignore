@@ -1,2 +1,6 @@
 output/
 mot_benchmark
+.DS_Store
+.idea/
+env/
+*.pyc
