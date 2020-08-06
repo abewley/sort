@@ -60,5 +60,5 @@ def get_dets(p, sess):
     for _, cls, idx in preds[2]:
         a, b, c, d = preds[0][0][idx]
         score = preds[1][0][cls][idx]
-        dets.append([a,b,c,d,score])
-    return dets
+        dets.append([b,a,d,c,score])
+    return np.array(dets)

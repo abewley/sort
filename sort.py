@@ -30,6 +30,8 @@ import time
 import argparse
 from filterpy.kalman import KalmanFilter
 
+import onnxyolo
+
 np.random.seed(0)
 
 
@@ -276,6 +278,7 @@ if __name__ == '__main__':
   total_time = 0.0
   total_frames = 0
   colours = np.random.rand(32, 3) #used only for display
+  sess = onnxyolo.get_sess()
   if(display):
     if not os.path.exists('mot_benchmark'):
       print('\n\tERROR: mot_benchmark link not found!\n\n    Create a symbolic link to the MOT benchmark\n    (https://motchallenge.net/data/2D_MOT_2015/#download). E.g.:\n\n    $ ln -s /path/to/MOT2015_challenge/2DMOT2015 mot_benchmark\n\n')
@@ -298,8 +301,11 @@ if __name__ == '__main__':
       print("Processing %s."%(seq))
       for frame in range(int(seq_dets[:,0].max())):
         frame += 1 #detection and frame numbers begin at 1
-        dets = seq_dets[seq_dets[:, 0]==frame, 2:7]
-        dets[:, 2:4] += dets[:, 0:2] #convert to [x1,y1,w,h] to [x1,y1,x2,y2]
+        p = 'mot_benchmark/%s/%s/img1/%06d.jpg' % (phase, seq, frame)
+        dets = onnxyolo.get_dets(p ,sess)
+        print(dets)
+        # dets = seq_dets[seq_dets[:, 0]==frame, 2:7]
+        # dets[:, 2:4] += dets[:, 0:2] #convert to [x1,y1,w,h] to [x1,y1,x2,y2]
         total_frames += 1
 
         if(display):
