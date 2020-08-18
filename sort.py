@@ -46,7 +46,7 @@ def linear_assignment(cost_matrix):
 
 def iou_batch(bb_test, bb_gt):                                                                                                   
   """                                                                                                                      
-  From SORT: Computes IUO between two bboxes in the form [l,t,w,h]                                                         
+  From SORT: Computes IOU between two bboxes in the form [x1,y1,x2,y2]                                                         
   """                                                                                                                      
   bb_gt = np.expand_dims(bb_gt, 0)                                                                                         
   bb_test = np.expand_dims(bb_test, 1)                                                                                     
@@ -299,7 +299,7 @@ if __name__ == '__main__':
       for frame in range(int(seq_dets[:,0].max())):
         frame += 1 #detection and frame numbers begin at 1
         dets = seq_dets[seq_dets[:, 0]==frame, 2:7]
-        dets[:, 2:4] += dets[:, 0:2] #convert to [x1,y1,w,h] to [x1,y1,x2,y2]
+        dets[:, 2:4] += dets[:, 0:2] #convert from [x1,y1,w,h] to [x1,y1,x2,y2]
         total_frames += 1
 
         if(display):
