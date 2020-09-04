@@ -52,10 +52,15 @@ def get_dets(p, sess):
     # input
     image_data = preprocess(image)
     image_size = np.array([image.size[1], image.size[0]], dtype=np.float32).reshape(1, 2)
+    print("Image Shape: ", image_size)
     preds = sess.run(
         ["yolonms_layer_1/ExpandDims_1:0",
          "yolonms_layer_1/ExpandDims_3:0",
          "yolonms_layer_1/concat_2:0"], {"input_1": image_data, "image_shape": image_size})
+    print("Preds Shape: ", preds[0].shape)
+    print("Preds Shape: ", preds[1].shape)
+    print("Preds Shape: ", preds[2].shape)
+    print(preds[2])
     dets = []
     for _, cls, idx in preds[2]:
         a, b, c, d = preds[0][0][idx]
