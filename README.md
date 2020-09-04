@@ -6,6 +6,12 @@ See an example [video here](https://motchallenge.net/movies/ETH-Linthescher-SORT
 
 By Alex Bewley  
 
+### jkschin comments
+1. I first used [this](https://github.com/ultralytics/yolov3) YOLOV3 repository to convert a YOLOV3 model into ONNX.
+2. Download [yolov3-10.onnx](https://drive.google.com/file/d/1m8DTvn4EByXyLr4alSSFon-UzihmhpoV/view?usp=sharing) for convenience.
+3. The key thing about these papers are that it's for research purposes. They take in the detections as a text file. `onnxyolo.py` uses the ONNX model to detect objects, and then passes those detections into SORT.
+4. I tried multiple C++ repositories and found this to be the most promising: https://github.com/yasenh/sort-cpp.
+
 ### Introduction
 
 SORT is a barebones implementation of a visual multiple object tracking framework based on rudimentary data association and state estimation techniques. It is designed for online tracking applications where only past and current frames are available and the method produces object identities on the fly. While this minimalistic tracker doesn't handle occlusion or re-entering objects its purpose is to serve as a baseline and testbed for the development of future trackers.
