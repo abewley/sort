@@ -2,7 +2,7 @@ SORT
 =====
 
 A simple online and realtime tracking algorithm for 2D multiple object tracking in video sequences.
-See an example [video here](https://motchallenge.net/movies/ETH-Linthescher-SORT.mp4).
+See an example [video here](https://alex.bewley.ai/misc/SORT-MOT17-06-FRCNN.webm).
 
 By Alex Bewley  
 
