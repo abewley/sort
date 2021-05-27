@@ -95,6 +95,7 @@ class KalmanBoxTracker(object):
   This class represents the internal state of individual tracked objects observed as bbox.
   """
   count = 0
+  countReset = 10000
   def __init__(self,bbox):
     """
     Initialises a tracker using initial bounding box.
@@ -113,7 +114,7 @@ class KalmanBoxTracker(object):
     self.kf.x[:4] = convert_bbox_to_z(bbox)
     self.time_since_update = 0
     self.id = KalmanBoxTracker.count
-    KalmanBoxTracker.count += 1
+    KalmanBoxTracker.count = (KalmanBoxTracker.count+1) % KalmanBoxTracker.countReset
     self.history = []
     self.hits = 0
     self.hit_streak = 0
