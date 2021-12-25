@@ -85,19 +85,21 @@ Using the [MOT challenge devkit](https://motchallenge.net/devkit/) the method pr
 ### Using SORT in your own project
 
 Below is the gist of how to instantiate and update SORT. See the ['__main__'](https://github.com/abewley/sort/blob/master/sort.py#L239) section of [sort.py](https://github.com/abewley/sort/blob/master/sort.py#L239) for a complete example.
-    
-    from sort import *
-    
-    #create instance of SORT
-    mot_tracker = Sort() 
-    
-    # get detections
-    ...
-    
-    # update SORT
-    track_bbs_ids = mot_tracker.update(detections)
 
-    # track_bbs_ids is a np array where each row contains a valid bounding box and track_id (last column)
-    ...
+```python
+from sort import *
+
+#create instance of SORT
+mot_tracker = Sort() 
+
+# get detections
+...
+
+# update SORT
+track_bbs_ids = mot_tracker.update(detections)
+
+# track_bbs_ids is a np array where each row contains a valid bounding box and track_id (last column)
+...
+```
     
  
