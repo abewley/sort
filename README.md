@@ -56,7 +56,7 @@ $ python sort.py
 
 To display the results you need to:
 
-1. Download the [2D MOT 2015 benchmark dataset](https://motchallenge.net/data/2D_MOT_2015/#download)
+1. Download the [2D MOT 2015 benchmark dataset](https://motchallenge.net/data/MOT15/)
 0. Create a symbolic link to the dataset
   ```
   $ ln -s /path/to/MOT2015_challenge/data/2DMOT2015 mot_benchmark
