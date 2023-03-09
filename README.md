@@ -39,7 +39,12 @@ If you find this repo useful in your research, please consider citing:
 
 ### Dependencies:
 
-To install required dependencies run:
+First install the g++ compiler with the command:
+```
+$ sudo apt install g++
+```
+
+Then, to install required dependencies run:
 ```
 $ pip install -r requirements.txt
 ```
