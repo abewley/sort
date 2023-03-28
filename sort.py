@@ -259,6 +259,7 @@ class Sort(object):
     flip_ret = np.flip(ret, axis=0)
 
     ret_boxes = flip_ret[:, :4]
+    dets = np.array(dets)
     det_boxes = dets[:, :4]
     # add axis to det_boxes to have difference of each ret to all dets
     differences = ret_boxes - det_boxes[:, np.newaxis]
