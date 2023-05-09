@@ -18,12 +18,15 @@
 from __future__ import print_function
 
 import os
+import sys
 import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from skimage import io
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import glob
 import time
