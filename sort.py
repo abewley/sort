@@ -21,7 +21,7 @@ import os
 import sys
 import numpy as np
 import matplotlib
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from skimage import io
