@@ -12,6 +12,6 @@ setup(name='sort',
         "filterpy>=1.4.5",
         "scikit-image>=0.17.2",
         "lap>=0.4.0"
-        ]
+      ],
       url='https://github.com/retail-intelligence/sort',
     )
