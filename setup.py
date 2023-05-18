@@ -7,11 +7,5 @@ setup(name='sort',
       description='Retail Intelligence sort',
       author='nautec',
       packages=find_packages(),
-      install_requires=[
-        "numpy>=1.24.2",
-        "filterpy>=1.4.5",
-        "scikit-image>=0.17.2",
-        "lap>=0.4.0"
-      ],
       url='https://github.com/retail-intelligence/sort',
     )
