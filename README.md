@@ -99,5 +99,12 @@ Below is the gist of how to instantiate and update SORT. See the ['__main__'](ht
 
     # track_bbs_ids is a np array where each row contains a valid bounding box and track_id (last column)
     ...
-    
- 
+
+
+
+<a id="see-also"></a>
+## 🔗 See also
+
+- [DeepSORT](https://github.com/nwojke/deep_sort) - The successor of SORT with a Deep Association Metric used injecting appearance information to improve the association in difficult scenarios such as occlusions and fast moving objects.
+- [Local Metrics for Multi-Object Tracking](https://github.com/google-research/localmot) - A framework to help better measure and understand how well your tracker performs at association across time as opposed to the standard metrics (MOTA, HOTA) which as heavilty biased towards raw detection performance.
+- [Human Scene Transformer](https://github.com/google-research/human-scene-transformer) - A recent repository for trajectory forecasting, a future direction beyond tracking (pun intended).
