@@ -317,6 +317,7 @@ if __name__ == '__main__':
           print('%d,%d,%.2f,%.2f,%.2f,%.2f,1,-1,-1,-1'%(frame,d[4],d[0],d[1],d[2]-d[0],d[3]-d[1]),file=out_file)
           if(display):
             d = d.astype(np.int32)
+            ax1.text(d[0],d[1],str(d[4]),c="white",bbox=dict(facecolor="green"))
             ax1.add_patch(patches.Rectangle((d[0],d[1]),d[2]-d[0],d[3]-d[1],fill=False,lw=3,ec=colours[d[4]%32,:]))
 
         if(display):
