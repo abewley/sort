@@ -157,7 +157,7 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
 
   Returns 3 lists of matches, unmatched_detections and unmatched_trackers
   """
-  if(len(trackers)==0):
+  if(len(trackers)==0 or len(detections)==0):
     return np.empty((0,2),dtype=int), np.arange(len(detections)), np.empty((0,5),dtype=int)
 
   iou_matrix = iou_batch(detections, trackers)
