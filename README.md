@@ -66,6 +66,15 @@ To display the results you need to:
   $ python sort.py --display
   ```
 
+Added command-line argument --max_id_threshold
+
+```bash
+# Unlimited IDs (default behavior)
+python sort.py 
+
+# Limited to 1000 IDs
+python sort.py --max_id_threshold 1000
+```
 
 ### Main Results
 
